@@ -5,6 +5,7 @@ import di.enums.BookingTime;
 import di.model.dto.boats.ResponseBoat;
 import di.model.entity.boats.AbstractBoat;
 import di.model.entity.boats.Boat;
+import di.model.entity.booking.Booking;
 import di.model.entity.seats.Seat;
 import di.repository.boat.BoatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class BoatService {
     @Autowired
     private final BoatRepository repository;
-    private BookingTime bookingTime;
+    private BookingTime booking;
     public BoatService(BoatRepository repository) {
         this.repository = repository;
     }
@@ -55,6 +56,7 @@ public class BoatService {
      */
 
     public ResponseBoat takePlace(Long boatId, Integer placeId) {
+        BookingTime btime;
         AbstractBoat boat = repository.findById(boatId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Boat with ID %s not found", boatId))); // поиск судна в списке
 
@@ -63,10 +65,12 @@ public class BoatService {
         }
 
         Seat seat = boat.getPlaces().get(placeId); // Создание обьекта искомого места
-        if (seat.getIsOccupied()) {                                // если место было занято то выбросится исключение
-            throw new IllegalStateException(String.format("Place %s is already taken", placeId));
+        if(seat.getBookingTimes().contains(bookingTime)){
+            throw new IllegalArgumentException("Place already took at the time: " +  bookingTime.getTime());
+        }else {
+                btime =
         }
-
+        seat.get
         seat.setIsOccupied(true);  // Установка фалага занятого места
         boat = repository.save(boat);
 

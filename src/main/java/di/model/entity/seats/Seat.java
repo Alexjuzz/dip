@@ -1,9 +1,14 @@
 package di.model.entity.seats;
 
+import di.enums.BookingTime;
 import di.model.entity.boats.AbstractBoat;
 import di.model.entity.boats.Boat;
+import di.model.entity.booking.Booking;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Класс места
@@ -16,14 +21,13 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "seatNumber") // позиция места
-    private Integer set_number;
+    private Integer setNumber;
 
-    @Column(name = "placeIsOccupied")  // занято или свободное
-    private Boolean isOccupied;
 
-    @ManyToOne
+    @ManyToOne                          // Ссылка на корабль
     @JoinColumn(name = "boatId", nullable = false)
     private AbstractBoat boat;
 
-
+    @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Список всех всех времен
+    private List<Booking> bookingTimes = new CopyOnWriteArrayList<>();
 }
