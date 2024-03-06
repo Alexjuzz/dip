@@ -37,7 +37,7 @@ public class AbstractBoat implements InterfaceShip {
      * Связь один ко многим
      */
     @OneToMany(mappedBy = "boat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private final List<Seat> places = new CopyOnWriteArrayList<>();
+    private  List<Seat> places = new CopyOnWriteArrayList<>();
 
     /**
      * Тур - у каждого судна может быть только один выбраный в текущий момент тур.
@@ -62,6 +62,23 @@ public class AbstractBoat implements InterfaceShip {
             this.places.add(seat);
         }
     }
+
+    /**
+     *  Конструктор для создания нового судна, с инициализацией всех мест и имени судна.
+     * @param name - имя судна
+     * @param capacity - количество мест
+     */
+    protected AbstractBoat(String name, int capacity) {
+        for (int i = 0; i < capacity; i++) {
+            this.name = name;
+            Seat seat = new Seat();
+            seat.setSet_number(i);
+            seat.setIsOccupied(true);
+            seat.setBoat(this);
+            this.places.add(seat);
+        }
+    }
+
 
 }
 

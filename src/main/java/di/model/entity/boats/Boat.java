@@ -13,7 +13,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @DiscriminatorValue("BoatLadoga")
-public class BoatLadoga extends AbstractBoat {
+public class Boat extends AbstractBoat {
 
 
     @Override
@@ -41,6 +41,7 @@ public class BoatLadoga extends AbstractBoat {
         return super.getPlaces();
     }
 
+
     @Override
     public Trip getTrip() {
         return super.getTrip();
@@ -59,5 +60,12 @@ public class BoatLadoga extends AbstractBoat {
     @Override
     public void setTrip(Trip trip) {
         super.setTrip(trip);
+    }
+
+    public Boat(String name, int capacity) {
+        super(name, capacity);
+    }
+    public Boat(){
+        super();
     }
 }
