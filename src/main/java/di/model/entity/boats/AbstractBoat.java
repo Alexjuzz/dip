@@ -73,7 +73,7 @@ public class AbstractBoat implements InterfaceShip {
             this.name = name;
             Seat seat = new Seat();
             seat.setSet_number(i);
-            seat.setIsOccupied(true);
+            seat.setIsOccupied(false);
             seat.setBoat(this);
             this.places.add(seat);
         }
