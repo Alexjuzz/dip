@@ -1,24 +1,22 @@
 package di.service.boat;
 
 
-import di.enums.TripType;
+import di.enums.BookingTime;
 import di.model.dto.boats.ResponseBoat;
 import di.model.entity.boats.AbstractBoat;
 import di.model.entity.boats.Boat;
 import di.model.entity.seats.Seat;
 import di.repository.boat.BoatRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 public class BoatService {
     @Autowired
     private final BoatRepository repository;
-
+    private BookingTime bookingTime;
     public BoatService(BoatRepository repository) {
         this.repository = repository;
     }
@@ -26,6 +24,7 @@ public class BoatService {
     public AbstractBoat createBoatByNameAndCapacity(String boatName, int capacity) {
         return new Boat(boatName, capacity);
     }
+
 
     /**
      * Метод поиска судна по его ID
