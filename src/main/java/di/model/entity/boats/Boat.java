@@ -62,9 +62,9 @@ public class Boat extends AbstractBoat {
         super.setTrip(trip);
     }
 
-    public Boat(String name, int capacity) {
-        super(name, capacity);
-    }
+//    public Boat(String name, int capacity) {
+//        super(name, capacity);
+//    }
     public Boat(){
         super();
     }

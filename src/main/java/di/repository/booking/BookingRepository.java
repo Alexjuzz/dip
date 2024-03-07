@@ -1,4 +1,4 @@
-package di.repository.boat;
+package di.repository.booking;
 
 import di.model.entity.booking.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;

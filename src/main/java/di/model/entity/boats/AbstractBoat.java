@@ -1,6 +1,7 @@
 package di.model.entity.boats;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import di.enums.TripType;
 import di.model.entity.seats.Seat;
 import di.model.entity.trips.Trip;
@@ -9,6 +10,7 @@ import di.model.interfaces.InterfaceTrip;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -36,8 +38,9 @@ public class AbstractBoat implements InterfaceShip {
      * Места - у каждого корабля есть свои места(сущность место) которые хранятся в листе
      * Связь один ко многим
      */
-    @OneToMany(mappedBy = "boat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Seat> places = new CopyOnWriteArrayList<>();
+    @OneToMany(mappedBy = "boat", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<Seat> places = new ArrayList<>();
 
     /**
      * Тур - у каждого судна может быть только один выбраный в текущий момент тур.
@@ -49,32 +52,25 @@ public class AbstractBoat implements InterfaceShip {
     private Trip trip;
 
 
+
     /**
      * Конструктор без параметров, сделан для того чтобы сразу создать свободные места и записать
      * их в лист places. Также проинициализировать поля seat's.
      */
+
     public AbstractBoat() {
-        for (int i = 0; i < 30; i++) {
-            Seat seat = new Seat();
-            seat.setBoat(this);
-            this.places.add(seat);
-        }
     }
 
-    /**
-     * Конструктор для создания нового судна, с инициализацией всех мест и имени судна.
-     *
-     * @param name     - имя судна
-     * @param capacity - количество мест
-     */
     protected AbstractBoat(String name, int capacity) {
-        for (int i = 0; i < capacity; i++) {
-            this.name = name;
-            Seat seat = new Seat();
-
-            seat.setBoat(this);
+    }
+    protected List<Seat> addSeatToPlaces(Seat seat) {
+        if (seat.getId() != null && this.places.stream().anyMatch(s -> s.getId().equals(seat.getId()))) {
+            System.out.printf("Seat with ID {%s} already exists", seat.getId());
+        } else {
+            System.out.printf("Adding seat with ID {%s}", seat.getId());
             this.places.add(seat);
         }
+        return this.places;
     }
 
 

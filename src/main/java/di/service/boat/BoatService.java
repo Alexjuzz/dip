@@ -1,31 +1,107 @@
 package di.service.boat;
 
 
-import di.enums.BookingTime;
+import di.enums.TripType;
 import di.model.dto.boats.ResponseBoat;
 import di.model.entity.boats.AbstractBoat;
 import di.model.entity.boats.Boat;
-import di.model.entity.booking.Booking;
 import di.model.entity.seats.Seat;
+import di.repository.TripRepository;
 import di.repository.boat.BoatRepository;
+import di.repository.seat.SeatRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
+//TODO - доделать логирование
 @Service
 public class BoatService {
-    @Autowired
     private final BoatRepository repository;
-    private BookingTime booking;
+
+
+    @Autowired
     public BoatService(BoatRepository repository) {
         this.repository = repository;
+
     }
 
-    public AbstractBoat createBoatByNameAndCapacity(String boatName, int capacity) {
-        return new Boat(boatName, capacity);
+    public ResponseBoat createBoatByNameAndCapacity() { // Создание корабля.
+        return convertBoatToResponseBoat(repository.save(new Boat()));
     }
 
+
+    public List<ResponseBoat> getAllBoats() { // получение списка всех найденых судов
+        return repository.findAll().stream().map(this::convertBoatToResponseBoat).toList();
+    }
+
+    /**
+     * Медод для добавления мест на судно. Прнимает ID существуещего корабля из базы данных.
+     * Если на корабле уже обьявлены были места то он просто возвращается какой и был.
+     * А если места были не инициализированы, то будет инициализация всех мест.
+     *
+     * @param boatId   - ID судна в базе.
+     * @param capacity - Обьем необходимых мест.
+     * @return возращает искомый корабль
+     */
+    public ResponseBoat setPlacesToBoat(Long boatId, Integer capacity) {
+        AbstractBoat boat = repository.findById(boatId)
+                .orElseThrow(() -> new EntityNotFoundException("Boat not found: " + boatId)); // поиск нужного судна
+
+        if (boat.getPlaces().isEmpty()) {  // проверка были ли инициализированы уже места.
+            for (int i = 1; i <= capacity; i++) {
+                Seat seat = new Seat();
+                seat.setSeatNumber(i);
+                seat.setBoat(boat);
+                boat.getPlaces().add(seat);
+            }
+        }
+        return convertBoatToResponseBoat(repository.save(boat));
+    }
+
+
+    /**
+     * Метод получения всех мест у судна
+     * @param boatId - ID Судна.
+     * @return - List<Seat> всех мест.
+     */
+    public List<Seat> getSeatsByBoatId(Long boatId) {
+        AbstractBoat boat = repository.findById(boatId)
+                .orElseThrow(() -> new EntityNotFoundException("Boat not found with ID: " + boatId));
+
+        List<Seat> seatList = boat.getPlaces();
+        if (seatList.isEmpty()) {
+            throw new RuntimeException("No seats found for boat with ID: " + boatId);
+        }
+        return seatList;
+    }
+
+
+    /**
+     * Метод для установки имени у судна. Будет установлено имя, если оно ранее не было установлено
+     *
+     * @param id   - ID Судна
+     * @param name - Имя
+     * @return - обьект ответа ResponseBoat
+     */
+    public ResponseBoat setNameToBoat(Long id, String name) {
+        AbstractBoat boat = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Boat not found: " + id)); // поиск нужного судна
+
+        boat.setName(name);
+        return convertBoatToResponseBoat(repository.save(boat));
+    }
+
+    public ResponseBoat setTripBoat(Long boatId, TripType tripType) {
+
+        AbstractBoat boat = repository.findById(boatId)
+                .orElseThrow(() -> new EntityNotFoundException("Boat not found: " + boatId)); // поиск нужного судна
+
+        boat.setTripType(tripType);
+        return convertBoatToResponseBoat(repository.save(boat));
+    }
 
     /**
      * Метод поиска судна по его ID
@@ -33,7 +109,6 @@ public class BoatService {
      * @param id - ID судна в базе данных
      * @return - возращает обьект ответа ResponseBoat
      * <p>
-     * TODO - доделать логирование
      */
     public Optional<ResponseBoat> getBoatById(Long id) {
 
@@ -46,65 +121,6 @@ public class BoatService {
         }
         return responseBoat;
     }
-
-    /**
-     * Метод бронирования места на судне.
-     *
-     * @param boatId  - Id искомого судна
-     * @param placeId - Id места на судне(индекс в ArrayList-e)
-     * @return Возвращается обьект ответа ResponseBoat
-     */
-
-    public ResponseBoat takePlace(Long boatId, Integer placeId) {
-        BookingTime btime;
-        AbstractBoat boat = repository.findById(boatId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Boat with ID %s not found", boatId))); // поиск судна в списке
-
-        if (placeId < 0 || placeId >= boat.getPlaces().size()) {   // проверка ID места находящегося в текущем судне
-            throw new IllegalArgumentException(String.format("Incorrect place ID: %s", placeId)); //
-        }
-
-        Seat seat = boat.getPlaces().get(placeId); // Создание обьекта искомого места
-        if(seat.getBookingTimes().contains(bookingTime)){
-            throw new IllegalArgumentException("Place already took at the time: " +  bookingTime.getTime());
-        }else {
-                btime =
-        }
-        seat.get
-        seat.setIsOccupied(true);  // Установка фалага занятого места
-        boat = repository.save(boat);
-
-        System.out.printf("Place %s has been taken%n", placeId);
-        return convertBoatToResponseBoat(boat);
-    }
-    /**
-     * Метод снятия бронирования места на судне.
-     *
-     * @param boatId  - Id искомого судна
-     * @param placeId - Id места на судне(индекс в ArrayList-e)
-     * @return Возвращается обьект ответа ResponseBoat
-     */
-    public ResponseBoat unlockPlace(Long boatId, Integer placeId) {
-        AbstractBoat boat = repository.findById(boatId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Boat with ID %s not found", boatId)));
-
-        if (placeId < 0 || placeId >= boat.getPlaces().size()) {   // проверка ID места находящегося в текущем судне
-            throw new IllegalArgumentException(String.format("Incorrect place ID: %s", placeId)); //
-        }
-
-        Seat seat = boat.getPlaces().get(placeId);
-
-        if (!seat.getIsOccupied()) {                                // если место было свободно то выбросится исключение
-            throw new IllegalStateException(String.format("Place %s is not taken", placeId));
-        }
-
-        seat.setIsOccupied(true);  // Установка фалага свободного места места
-        boat = repository.save(boat);
-        System.out.printf("Place %s has been unlocked%n", placeId);
-        return convertBoatToResponseBoat(boat);
-    }
-
-
 
 
     // region convert methods
@@ -142,5 +158,7 @@ public class BoatService {
         abstractBoat.setPlaces(boat.getPlaces());
         return abstractBoat;
     }
+
+
     //endregion
 }

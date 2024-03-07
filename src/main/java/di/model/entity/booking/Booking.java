@@ -15,6 +15,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
+    @JoinColumn(name = "seat_id", referencedColumnName = "id")
     private Seat seat;
     @Enumerated(EnumType.STRING)
     private BookingTime bookingTime;

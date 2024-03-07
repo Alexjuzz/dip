@@ -1,11 +1,12 @@
-package di.service.boat;
+package di.service.booking;
 
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
 import di.model.entity.booking.Booking;
 import di.model.entity.seats.Seat;
-import di.repository.boat.BookingRepository;
-import di.repository.boat.SeatRepository;
+import di.repository.booking.BookingRepository;
+import di.repository.seat.SeatRepository;
+import di.service.boat.BoatService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,30 +15,20 @@ import java.time.LocalDate;
 
 @Service
 public class BookingService {
-        private final SeatRepository seatRepository;
         private final BookingRepository bookingRepository;
-        @Autowired
+        private final BoatService boatService;
 
-    public BookingService(SeatRepository seatRepository, BookingRepository bookingRepository) {
-        this.seatRepository = seatRepository;
+
+
+    @Autowired
+    public BookingService(BookingRepository bookingRepository, BoatService boatService) {
         this.bookingRepository = bookingRepository;
+        this.boatService = boatService;
     }
 
-    public ResponseBooking createBooking(Long seatId, LocalDate date, BookingTime bookingTime){
-        Seat seat = seatRepository.findById(seatId).orElseThrow(()-> new EntityNotFoundException("Seat not found"));
-        Booking booking = new Booking();
-        booking.setSeat(seat);
-        booking.setDate(date);
-        booking.setBookingTime(bookingTime);
-        boolean isAlreadyBooked = seat.getBookingTimes()
-                .stream()
-                .anyMatch(
-                        b -> b.getDate().equals(date) && b.getBookingTime().equals(bookingTime));
-        if (isAlreadyBooked) {
-            throw new IllegalStateException("This seat is already booked for the selected time");
-        }
-        return convetBookingToResponseBooking(booking);
-    }
+
+
+
 
     private ResponseBooking convetBookingToResponseBooking(Booking booking) {
             ResponseBooking responseBooking = new ResponseBooking();
