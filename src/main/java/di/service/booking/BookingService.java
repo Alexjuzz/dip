@@ -2,50 +2,130 @@ package di.service.booking;
 
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
-import di.model.entity.boats.AbstractBoat;
 import di.model.entity.booking.Booking;
 import di.model.entity.seats.Seat;
-import di.repository.boat.BoatRepository;
 import di.repository.booking.BookingRepository;
 import di.repository.seat.SeatRepository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
+//TODO :  1) Подумать как правильно обработать все возможные исключения.
+//        2) Сделать Class user и связать его с бронированием.
+//        3) Создать методы обновления всех данных для каждого нового дня. Создать метод бы закрывал любое
+//              бронирование если у судна trip = private.
+//        4) Подумать о том стоит ли  сделать обратную регистрацию -> Место имеет уже все готовые временные интервалы
+//                      которые сразу проинициализированы, а при добавлении убирать из списка выбраное время.
+//        5) Доделать логирование.
+
 
 @Service
 public class BookingService {
     private final BookingRepository bookingRepository;
-    private final BoatRepository boatRepository;
     private final SeatRepository seatRepository;
 
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, BoatRepository boatRepository, SeatRepository seatRepository) {
+    public BookingService(BookingRepository bookingRepository, SeatRepository seatRepository) {
         this.bookingRepository = bookingRepository;
-        this.boatRepository = boatRepository;
         this.seatRepository = seatRepository;
     }
 
-    public ResponseBooking setBookingToPlace(Long boatId, Long seatId, BookingTime bookingTime) {
-        AbstractBoat boat = boatRepository.findById(boatId)
-                .orElseThrow(() -> new NoSuchElementException("Boat not found"));
+
+    /**
+     * Метод резервации места по выбранному времени.
+     *
+     * @param seatId      - айди места в базе данных.
+     * @param bookingTime - Enum - в котором записаны итенрвалы для записи каждые 3 часа.
+     * @return - возращает обьект ответа для фронта.
+     */
+    @Transactional
+    public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime) {
 
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new NoSuchElementException("Seat not found"));
+
+        if (!checkReservedPlace(seat, bookingTime)) {
+            throw new IllegalStateException("The seat is already booked for the selected time");
+        }
 
         Booking booking = new Booking();
         booking.setDate(LocalDate.now());
         booking.setSeat(seat);
         booking.setBookingTime(bookingTime);
-
-
         return convetBookingToResponseBooking(bookingRepository.save(booking));
     }
 
+    /**
+     * Метод для изменения времени бронирования. Метод принимает ID нужного места и меняет в нем
+     * старое старое время которое было указано на новое.
+     *
+     * @param seatId  - ID места в базе данных
+     * @param oldTime - старое время
+     * @param newTime - новое время
+     * @return - Возвращает обьект для ответа на front
+     */
+    @Transactional
+    //TODO : Посмотреть как правильно обработать oldTime если его нету.
+    public ResponseBooking changeReservedBookingTime(Long seatId, BookingTime oldTime, BookingTime newTime) {
+        Seat seat = seatRepository.findById(seatId).orElseThrow(() -> new NoSuchElementException("Seat not found With ID : " + seatId));
+        Booking booking = seat.getBookings()
+                .stream()
+                .filter(b -> b.getBookingTime().equals(oldTime)).
+                findFirst().
+                orElseThrow(() -> new NoSuchElementException("Booking not found for the specified time"));
 
+
+        boolean isTimeAvailable = seat.getBookings().stream() // Обработка не произошла ли попытка установки на уже занятое время.
+                .noneMatch(b -> b.getBookingTime().equals(newTime));
+
+        if (!isTimeAvailable) {
+            throw new IllegalStateException("The new time is already booked");
+        }
+
+        booking.setBookingTime(newTime);
+        return convetBookingToResponseBooking(bookingRepository.save(booking));
+    }
+
+    /**
+     * Метод для очистки всех бронирований на текущем месте
+     * @param id - ID места в базе данных
+     * @return true - если операция была успешна, если место было не найдено будеь выбрашено исключение.
+     */
+    @Transactional
+    public boolean clearAllReservedBookingTimeOnSeat(Long id) {
+        Seat seat = seatRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seat not found With ID : " + id));
+        bookingRepository.deleteAll(seat.getBookings());
+        seat.getBookings().clear();
+        seatRepository.save(seat);
+        return true;
+    }
+
+
+
+
+
+    /**
+     * Метод проверки на наличе резервации, что оно свободно для регистрации
+     *
+     * @param seat        - номер места
+     * @param bookingTime - время корое необходимо проверить
+     * @return - true - если свободно. false - если занято.
+     */
+    private boolean checkReservedPlace(Seat seat, BookingTime bookingTime) {
+        return seat.getBookings().stream()
+                .noneMatch(b -> b.getBookingTime().equals(bookingTime));
+    }
+
+
+
+
+
+    //region методы конвертации обьектов с базы данных в ответы для фронта и обратно.
     private ResponseBooking convetBookingToResponseBooking(Booking booking) {
         ResponseBooking responseBooking = new ResponseBooking();
         responseBooking.setBookingTime(booking.getBookingTime());
@@ -63,4 +143,5 @@ public class BookingService {
         booking.setDate(responseBooking.getDate());
         return booking;
     }
+    //endregion
 }

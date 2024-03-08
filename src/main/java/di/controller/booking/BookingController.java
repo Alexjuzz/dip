@@ -16,7 +16,12 @@ public class BookingController implements iBookingController{
     }
 
     @Override
-    public ResponseEntity<ResponseBooking> setBookingToPlace(Long boatId, Long seatId, BookingTime bookingTime) {
-        return ResponseEntity.ok(bookingService.setBookingToPlace(boatId,seatId,bookingTime));
+    public ResponseEntity<ResponseBooking> setBookingToPlace( Long seatId, BookingTime bookingTime) {
+        return ResponseEntity.ok(bookingService.setBookingToPlace(seatId,bookingTime));
+    }
+
+    @Override
+    public ResponseEntity<ResponseBooking> changeReservedBookingTime(Long seatId, BookingTime oldTime, BookingTime newTime) {
+       return  ResponseEntity.ok(bookingService.changeReservedBookingTime(seatId,oldTime,newTime));
     }
 }
