@@ -1,5 +1,6 @@
 package di.model.entity.booking;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import di.enums.BookingTime;
 import di.model.entity.seats.Seat;
 import jakarta.persistence.*;
@@ -16,6 +17,7 @@ public class Booking {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "seat_id", referencedColumnName = "id")
+    @JsonBackReference
     private Seat seat;
     @Enumerated(EnumType.STRING)
     private BookingTime bookingTime;
