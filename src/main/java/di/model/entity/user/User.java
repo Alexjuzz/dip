@@ -1,18 +1,17 @@
-package di.model.entity.client;
+package di.model.entity.user;
 
-import di.model.entity.client.telephone.Telephone;
+import di.model.entity.user.telephone.Telephone;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO : Подумать о Security - На счет USERDETAILS .
 @Data
-
 @Entity
 @Table(name = "user")
-public abstract class User extends SecurityProperties.User {
+public abstract class User  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

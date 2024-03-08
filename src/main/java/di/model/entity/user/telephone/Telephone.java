@@ -1,6 +1,6 @@
-package di.model.entity.client.telephone;
+package di.model.entity.user.telephone;
 
-import di.model.entity.client.User;
+import di.model.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

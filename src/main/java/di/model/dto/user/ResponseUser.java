@@ -1,6 +1,6 @@
 package di.model.dto.user;
 
-import di.model.entity.client.telephone.Telephone;
+import di.model.entity.user.telephone.Telephone;
 import lombok.Data;
 
 import java.util.List;
@@ -10,6 +10,6 @@ public class ResponseUser {
     private Long id;
     private String name;
     private String email;
-    private List<Telephone> telephoneList;
+    private List<Telephone> telephones;
     private String password;
 }
