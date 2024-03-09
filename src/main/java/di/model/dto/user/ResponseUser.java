@@ -1,6 +1,6 @@
 package di.model.dto.user;
 
-import di.model.entity.user.telephone.Telephone;
+import di.model.entity.telephone.Telephone;
 import lombok.Data;
 
 import java.util.List;

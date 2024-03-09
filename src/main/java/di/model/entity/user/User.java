@@ -1,6 +1,6 @@
 package di.model.entity.user;
 
-import di.model.entity.user.telephone.Telephone;
+import di.model.entity.telephone.Telephone;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +12,13 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public abstract class User  {
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.telephones = telephones;
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +28,7 @@ public abstract class User  {
     @Column(name = "email",nullable = false,length = 250)
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Telephone> telephones = new ArrayList<>();
 
     @Column(name = "password",nullable = false)

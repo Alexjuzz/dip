@@ -1,6 +1,6 @@
 package di.model.entity.user;
 
-import di.model.entity.user.telephone.Telephone;
+import di.model.entity.telephone.Telephone;
 import lombok.Data;
 
 import java.util.List;
@@ -40,6 +40,10 @@ public class RegularUser extends User{
     @Override
     public void setName(String name) {
         super.setName(name);
+    }
+
+    public RegularUser(String name, String email, String password) {
+        super(name, email, password);
     }
 
     @Override

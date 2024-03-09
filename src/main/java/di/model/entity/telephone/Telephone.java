@@ -1,4 +1,4 @@
-package di.model.entity.user.telephone;
+package di.model.entity.telephone;
 
 import di.model.entity.user.User;
 import jakarta.persistence.*;
@@ -22,6 +22,11 @@ public class Telephone {
     private Long id;
     @Pattern(regexp="^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$", message = "The number invalid")
     private String number;
+
+    public Telephone(String number) {
+        this.number = number;
+    }
+
     @Override
     public String toString() {
         return  number;
