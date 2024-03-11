@@ -1,6 +1,5 @@
 package di.service.booking;
 
-import di.controller.telephone.Telephone;
 import di.customexceptions.*;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
@@ -52,7 +51,8 @@ public class BookingService {
     @Transactional
     public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime,String number) {
 
-        Telephone telephone = telephoneRepository.getIdByNumber(number).orElseThrow(()-> new TelephoneNotFoundException("Telephone not found"));
+        Telephone telephone = telephoneRepository.getIdByNumber(number).
+                orElseThrow(()-> new TelephoneNotFoundException("Telephone not found"));
 
 
         Seat seat = seatRepository.findById(seatId)
@@ -66,6 +66,7 @@ public class BookingService {
         booking.setDate(LocalDate.now());
         booking.setSeat(seat);
         booking.setBookingTime(bookingTime);
+        booking.setTelephone(telephone);
         return convetBookingToResponseBooking(bookingRepository.save(booking));
     }
 

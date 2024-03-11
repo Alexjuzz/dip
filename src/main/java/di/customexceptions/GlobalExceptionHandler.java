@@ -64,4 +64,14 @@ public class GlobalExceptionHandler {
         body.put("path", request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(TelephoneAlreadyExist.class)
+    public ResponseEntity<Object> handleSeatAlreadyBookedException(TelephoneAlreadyExist ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", "Telephone Conflict");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
 }
