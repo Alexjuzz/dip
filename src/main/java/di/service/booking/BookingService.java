@@ -1,8 +1,7 @@
 package di.service.booking;
 
 import di.controller.telephone.Telephone;
-import di.customexceptions.SeatNotFoundException;
-import di.customexceptions.TelephoneNotFoundException;
+import di.customexceptions.*;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
 import di.model.entity.booking.Booking;
@@ -60,7 +59,7 @@ public class BookingService {
                 .orElseThrow(() -> new SeatNotFoundException("Seat with ID: " + seatId + " not found"));
 
         if (!checkReservedPlace(seat, bookingTime)) {
-            throw new IllegalStateException("The seat is already booked for the selected time");
+            throw new SeatAlreadyBookedException("The seat is already booked for the selected time");
         }
 
         Booking booking = new Booking();
@@ -73,13 +72,13 @@ public class BookingService {
     @Transactional
     public boolean cancelReservation(Long seatId, BookingTime bookingTime){
         Seat seat = seatRepository.findById(seatId)
-                .orElseThrow(() -> new NoSuchElementException("Seat not found"));
+                .orElseThrow(() -> new SeatNotFoundException("Seat not found"));
 
         //поиск забранированного времени в списке всех броней.
         Booking bookingToRemove = seat.getBookings().stream()
                 .filter(booking -> booking.getBookingTime().equals(bookingTime))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Booking not found"));
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
         bookingRepository.delete(bookingToRemove); // Удаляем бронирование
         return true;
@@ -97,12 +96,12 @@ public class BookingService {
     @Transactional
     //TODO : Посмотреть как правильно обработать oldTime если его нету.
     public ResponseBooking changeReservedBookingTime(Long seatId, BookingTime oldTime, BookingTime newTime) {
-        Seat seat = seatRepository.findById(seatId).orElseThrow(() -> new NoSuchElementException("Seat not found With ID : " + seatId));
+        Seat seat = seatRepository.findById(seatId).orElseThrow(() -> new SeatNotFoundException("Seat not found With ID : " + seatId));
         Booking booking = seat.getBookings()
                 .stream()
                 .filter(b -> b.getBookingTime().equals(oldTime)).
                 findFirst().
-                orElseThrow(() -> new NoSuchElementException("Booking not found for the specified time"));
+                orElseThrow(() -> new BoatNotFoundException("Booking not found for the specified time"));
 
 
         boolean isTimeAvailable = seat.getBookings().stream() // Обработка не произошла ли попытка установки на уже занятое время.
@@ -123,7 +122,7 @@ public class BookingService {
      */
     @Transactional
     public boolean clearAllReservedBookingTimeOnSeat(Long id) {
-        Seat seat = seatRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Seat not found With ID : " + id));
+        Seat seat = seatRepository.findById(id).orElseThrow(() -> new SeatNotFoundException("Seat not found With ID : " + id));
         bookingRepository.deleteAll(seat.getBookings());
         seat.getBookings().clear();
         seatRepository.save(seat);

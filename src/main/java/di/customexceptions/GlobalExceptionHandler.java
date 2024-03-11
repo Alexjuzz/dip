@@ -54,4 +54,14 @@ public class GlobalExceptionHandler {
         body.put("path", request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(SeatAlreadyBookedException.class)
+    public ResponseEntity<Object> handleSeatAlreadyBookedException(SeatAlreadyBookedException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", "Booking Conflict");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
 }
