@@ -1,6 +1,8 @@
 package di.service.booking;
 
 import di.controller.telephone.Telephone;
+import di.customexceptions.SeatNotFoundException;
+import di.customexceptions.TelephoneNotFoundException;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
 import di.model.entity.booking.Booking;
@@ -51,11 +53,11 @@ public class BookingService {
     @Transactional
     public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime,String number) {
 
-        Telephone telephone = telephoneRepository.getIdByNumber(number).orElseThrow(()-> new NoSuchElementException("Telephone not found"));
+        Telephone telephone = telephoneRepository.getIdByNumber(number).orElseThrow(()-> new TelephoneNotFoundException("Telephone not found"));
 
 
         Seat seat = seatRepository.findById(seatId)
-                .orElseThrow(() -> new NoSuchElementException("Seat not found"));
+                .orElseThrow(() -> new SeatNotFoundException("Seat with ID: " + seatId + " not found"));
 
         if (!checkReservedPlace(seat, bookingTime)) {
             throw new IllegalStateException("The seat is already booked for the selected time");
