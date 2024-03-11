@@ -11,11 +11,12 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository repository;
     private final TelephoneRepository telephoneRepository;
-
     @Autowired
     public UserService(UserRepository repository, TelephoneRepository telephoneRepository) {
         this.repository = repository;
@@ -24,16 +25,18 @@ public class UserService {
 
 
     @Transactional
-    public ResponseUser createUser(String name, String email,String phone, String password) {
-        User user= new RegularUser(name,email,password);
-        Telephone telephone = new Telephone(phone);
-        telephone.setUser(user);
-        telephone.setNumber(phone);
+    public ResponseUser createUser(User user) {
+        User requestUser = new User();
+        Telephone telephone = new Telephone(user.getTelephone().getNumber());
+        telephone.setUser(requestUser);
+        telephone.setNumber(user.getTelephone().getNumber());
 
-        user.getTelephones().add(telephone);
+        requestUser.setTelephone(telephone);
+        requestUser.setName(user.getName());
+        requestUser.setEmail(user.getEmail());
+        requestUser.setPassword(user.getPassword());
 
-        return convertUserToResponseUser(repository.save(user));
-
+        return convertUserToResponseUser(repository.save(requestUser));
     }
 
 
@@ -44,17 +47,24 @@ public class UserService {
         response.setName(user.getName());
         response.setEmail(user.getEmail());
         response.setPassword(user.getPassword());
-        response.setTelephones(user.getTelephones());
+        response.setTelephone(user.getTelephone());
         return response;
     }
+
+    public List<ResponseUser> getAllUsers() {
+        return repository.findAll().stream().map(this::convertUserToResponseUser).toList();
+    }
+
 
     private User convertResponseUserToUser(ResponseUser responseUser) {
         User user = new RegularUser();
         user.setEmail(responseUser.getEmail());
         user.setPassword(responseUser.getPassword());
         user.setId(responseUser.getId());
-        user.setTelephones(responseUser.getTelephones());
+        user.setTelephone(responseUser.getTelephone());
         user.setName(user.getName());
         return user;
     }
+
+
 }

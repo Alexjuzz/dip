@@ -2,9 +2,11 @@ package di.model.entity.user;
 
 import di.model.entity.telephone.Telephone;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class RegularUser extends User{
     @Override
@@ -22,10 +24,7 @@ public class RegularUser extends User{
         return super.getEmail();
     }
 
-    @Override
-    public List<Telephone> getTelephones() {
-        return super.getTelephones();
-    }
+
 
     @Override
     public String getPassword() {
@@ -42,19 +41,14 @@ public class RegularUser extends User{
         super.setName(name);
     }
 
-    public RegularUser(String name, String email, String password) {
-        super(name, email, password);
-    }
+
 
     @Override
     public void setEmail(String email) {
         super.setEmail(email);
     }
 
-    @Override
-    public void setTelephones(List<Telephone> telephones) {
-        super.setTelephones(telephones);
-    }
+
 
     @Override
     public void setPassword(String password) {

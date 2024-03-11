@@ -35,3 +35,4 @@ public class Seat {
     @JsonManagedReference
     private List<Booking> bookings = new ArrayList<>();
 }
+

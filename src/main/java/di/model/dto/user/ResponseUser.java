@@ -10,6 +10,6 @@ public class ResponseUser {
     private Long id;
     private String name;
     private String email;
-    private List<Telephone> telephones;
+    private Telephone telephone;
     private String password;
 }

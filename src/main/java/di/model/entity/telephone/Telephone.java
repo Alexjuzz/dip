@@ -1,5 +1,6 @@
 package di.model.entity.telephone;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import di.model.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,14 +13,25 @@ import javax.validation.constraints.Pattern;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-
+@AllArgsConstructor
 public class Telephone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    /**
+     * Проверяет корректность формата телефонного номера в России.
+     *
+     * Форматы, которые поддерживаются:
+     * - 8xxxxxxxxxx
+     * - +7xxxxxxxxxx
+     * - xxx-xxx-xxxx
+     * - xxx xxx xxxx
+     * - (xxx)xxx-xxxx
+     * - (xxx) xxx-xxxx
+     *
+     */
     @Pattern(regexp="^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$", message = "The number invalid")
     private String number;
 
@@ -31,11 +43,9 @@ public class Telephone {
     public String toString() {
         return  number;
     }
-
-    @ToString.Exclude
-    @ManyToOne
+    @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
-
 
 }
