@@ -8,15 +8,22 @@ import di.model.entity.telephone.Telephone;
 import di.repository.telephone.TelephoneRepository;
 import di.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
     private final UserRepository repository;
     private final TelephoneRepository telephoneRepository;
+
+    @Autowired
+    private Validator validator;
     @Autowired
     public UserService(UserRepository repository, TelephoneRepository telephoneRepository) {
         this.repository = repository;
@@ -26,18 +33,37 @@ public class UserService {
 
     @Transactional
     public ResponseUser createUser(User user) {
-        User requestUser = new User();
-        Telephone telephone = new Telephone(user.getTelephone().getNumber());
-        telephone.setUser(requestUser);
-        telephone.setNumber(user.getTelephone().getNumber());
+        //TODO доделать validator
+        Set<ConstraintViolation<Telephone>> validation = validator.validate(user.getTelephone());
+        if(!validation.isEmpty()){
+            throw new ConstraintViolationException(validation);
+        }
 
-        requestUser.setTelephone(telephone);
+        if(telephoneRepository.existsByNumber(user.getTelephone().getNumber())){
+            throw  new IllegalArgumentException("Telephone number already exist");
+        }
+        User requestUser = new User();
         requestUser.setName(user.getName());
         requestUser.setEmail(user.getEmail());
         requestUser.setPassword(user.getPassword());
 
+        Telephone telephone = new Telephone(user.getTelephone().getNumber());
+        telephone.setUser(requestUser);
+        requestUser.setTelephone(telephone);
+
         return convertUserToResponseUser(repository.save(requestUser));
     }
+    @Transactional
+    public List<ResponseUser> getAllUsers() {
+        return repository.findAll().stream().map(this::convertUserToResponseUser).toList();
+    }
+
+    @Transactional
+    public ResponseUser getUserByPhone(String number){
+        User user = repository.getByTelephone(number);
+        return convertUserToResponseUser(user);
+    }
+
 
 
     //region методы конвертации обьектов.
@@ -51,9 +77,6 @@ public class UserService {
         return response;
     }
 
-    public List<ResponseUser> getAllUsers() {
-        return repository.findAll().stream().map(this::convertUserToResponseUser).toList();
-    }
 
 
     private User convertResponseUserToUser(ResponseUser responseUser) {
@@ -66,5 +89,6 @@ public class UserService {
         return user;
     }
 
+    //endregion
 
 }
