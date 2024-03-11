@@ -1,18 +1,22 @@
 package di.service.booking;
 
+import di.controller.telephone.Telephone;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
 import di.model.entity.booking.Booking;
 import di.model.entity.seats.Seat;
+import di.model.entity.telephone.Telephone;
 import di.repository.booking.BookingRepository;
 import di.repository.seat.SeatRepository;
 
+import di.repository.telephone.TelephoneRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 //TODO :  1) Подумать как правильно обработать все возможные исключения.
 //        2) Сделать Class user и связать его с бронированием.
 //        3) Создать методы обновления всех данных для каждого нового дня. Создать метод бы закрывал любое
@@ -26,12 +30,14 @@ import java.util.NoSuchElementException;
 public class BookingService {
     private final BookingRepository bookingRepository;
     private final SeatRepository seatRepository;
+    private final TelephoneRepository telephoneRepository;
 
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, SeatRepository seatRepository) {
+    public BookingService(BookingRepository bookingRepository, SeatRepository seatRepository, TelephoneRepository telephoneRepository) {
         this.bookingRepository = bookingRepository;
         this.seatRepository = seatRepository;
+        this.telephoneRepository = telephoneRepository;
     }
 
 
@@ -43,7 +49,10 @@ public class BookingService {
      * @return - возращает обьект ответа для фронта.
      */
     @Transactional
-    public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime) {
+    public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime,String number) {
+
+        Telephone telephone = telephoneRepository.getIdByNumber(number).orElseThrow(()-> new NoSuchElementException("Telephone not found"));
+
 
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new NoSuchElementException("Seat not found"));
