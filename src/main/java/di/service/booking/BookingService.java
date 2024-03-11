@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 //TODO :  1) Подумать как правильно обработать все возможные исключения.
 //        2) Сделать Class user и связать его с бронированием.
@@ -58,6 +57,21 @@ public class BookingService {
         booking.setSeat(seat);
         booking.setBookingTime(bookingTime);
         return convetBookingToResponseBooking(bookingRepository.save(booking));
+    }
+
+    @Transactional
+    public boolean cancelReservation(Long seatId, BookingTime bookingTime){
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new NoSuchElementException("Seat not found"));
+
+        //поиск забранированного времени в списке всех броней.
+        Booking bookingToRemove = seat.getBookings().stream()
+                .filter(booking -> booking.getBookingTime().equals(bookingTime))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Booking not found"));
+
+        bookingRepository.delete(bookingToRemove); // Удаляем бронирование
+        return true;
     }
 
     /**
@@ -106,9 +120,6 @@ public class BookingService {
     }
 
 
-
-
-
     /**
      * Метод проверки на наличе резервации, что оно свободно для регистрации
      *
@@ -120,9 +131,6 @@ public class BookingService {
         return seat.getBookings().stream()
                 .noneMatch(b -> b.getBookingTime().equals(bookingTime));
     }
-
-
-
 
 
     //region методы конвертации обьектов с базы данных в ответы для фронта и обратно.

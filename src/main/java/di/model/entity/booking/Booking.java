@@ -22,4 +22,5 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingTime bookingTime;
     private LocalDate date;
+
 }
