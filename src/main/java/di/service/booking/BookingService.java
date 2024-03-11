@@ -1,6 +1,10 @@
 package di.service.booking;
 
-import di.customexceptions.*;
+import di.customexceptions.boat.BoatNotFoundException;
+import di.customexceptions.booking.BookingNotFoundException;
+import di.customexceptions.seat.SeatAlreadyBookedException;
+import di.customexceptions.seat.SeatNotFoundException;
+import di.customexceptions.telephone.TelephoneNotFoundException;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
 import di.model.entity.booking.Booking;

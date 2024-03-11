@@ -1,4 +1,4 @@
-package di.customexceptions;
+package di.customexceptions.booking;
 
 public class BookingNotFoundException extends RuntimeException{
     public BookingNotFoundException(String message){

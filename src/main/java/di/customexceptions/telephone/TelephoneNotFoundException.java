@@ -1,4 +1,4 @@
-package di.customexceptions;
+package di.customexceptions.telephone;
 
 public class TelephoneNotFoundException extends RuntimeException {
     public TelephoneNotFoundException(String message){

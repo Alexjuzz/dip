@@ -1,6 +1,9 @@
 package di.service.boat;
 
 
+import di.customexceptions.boat.BoatNotFoundException;
+import di.customexceptions.boat.BoatValidCapacityException;
+import di.customexceptions.seat.SeatsWithBoatIsEmpty;
 import di.enums.TripType;
 import di.model.dto.boats.ResponseBoat;
 import di.model.entity.boats.AbstractBoat;
@@ -9,6 +12,7 @@ import di.model.entity.seats.Seat;
 import di.repository.boat.BoatRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +54,12 @@ public class BoatService {
      */
     public ResponseBoat setPlacesToBoat(Long boatId, Integer capacity) {
         AbstractBoat boat = repository.findById(boatId)
-                .orElseThrow(() -> new EntityNotFoundException("Boat not found: " + boatId)); // поиск нужного судна
+                .orElseThrow(() -> new BoatNotFoundException("Boat with ID :" + boatId + " not found" )); // поиск нужного судна
+
+        if(capacity < 5 || capacity > 100){
+            throw new BoatValidCapacityException("Capacity equals: " + capacity);
+        }
+
 
         if (boat.getPlaces().isEmpty()) {  // проверка были ли инициализированы уже места.
             for (int i = 1; i <= capacity; i++) {
@@ -71,11 +80,11 @@ public class BoatService {
      */
     public List<Seat> getSeatsByBoatId(Long boatId) {
         AbstractBoat boat = repository.findById(boatId)
-                .orElseThrow(() -> new EntityNotFoundException("Boat not found with ID: " + boatId));
+                .orElseThrow(() -> new BoatNotFoundException("Boat not found with ID: " + boatId));
 
         List<Seat> seatList = boat.getPlaces();
         if (seatList.isEmpty()) {
-            throw new RuntimeException("No seats found for boat with ID: " + boatId);
+            throw new SeatsWithBoatIsEmpty("No seats found for boat with ID: " + boatId);
         }
         return seatList;
     }
@@ -90,7 +99,7 @@ public class BoatService {
      */
     public ResponseBoat setNameToBoat(Long id, String name) {
         AbstractBoat boat = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Boat not found: " + id)); // поиск нужного судна
+                .orElseThrow(() -> new BoatNotFoundException("Boat not found: " + id)); // поиск нужного судна
 
         boat.setName(name);
         return convertBoatToResponseBoat(repository.save(boat));
@@ -112,16 +121,9 @@ public class BoatService {
      * @return - возращает обьект ответа ResponseBoat
      * <p>
      */
-    public Optional<ResponseBoat> getBoatById(Long id) {
-
-        Optional<ResponseBoat> responseBoat = repository.findById(id).map(this::convertBoatToResponseBoat);
-
-        if (responseBoat.isPresent()) {
-            System.out.printf("Boat with id {%s} found", id);
-        } else {
-            System.out.printf("Boat with id {%s} not found", id);
-        }
-        return responseBoat;
+    public ResponseBoat getBoatById(Long id) {
+       return  convertBoatToResponseBoat(repository.findById(id).
+               orElseThrow(() -> new BoatNotFoundException("Boat with ID:"  + id + " not found")));
     }
 
 

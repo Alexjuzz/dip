@@ -3,6 +3,7 @@ package di.controller.boat;
 import di.enums.TripType;
 import di.model.dto.boats.ResponseBoat;
 import di.model.entity.boats.Boat;
+import di.model.entity.seats.Seat;
 import jakarta.persistence.Enumerated;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,12 @@ public interface iBoatController {
 
     @GetMapping("/all")
     ResponseEntity<List<ResponseBoat>> getAll();
+
+    @GetMapping("/getSeats/{id}")
+    ResponseEntity<List<Seat>> getSeatsById(@PathVariable("id") Long id);
+
+    @GetMapping("/getBoatById/{id}")
+    ResponseEntity<ResponseBoat> getBoatById(@PathVariable("id") Long id);
 
     @PostMapping("/setPlaces/{id}/{capacities}")
     ResponseEntity<ResponseBoat> setPlacesToBoat(@PathVariable("id") Long id,@PathVariable Integer capacities);
