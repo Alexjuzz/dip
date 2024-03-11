@@ -3,6 +3,7 @@ package di.controller.boat;
 
 import di.enums.TripType;
 import di.model.dto.boats.ResponseBoat;
+import di.model.entity.boats.Boat;
 import di.service.boat.BoatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,8 @@ public class BoatController implements iBoatController {
 
 
     @Override
-    public ResponseEntity<ResponseBoat> createBoatByNameAndCapacity() {
-        return ResponseEntity.ok(boatService.createBoatByNameAndCapacity());
+    public ResponseEntity<ResponseBoat> createBoatByNameAndCapacity(Boat boat) {
+        return ResponseEntity.ok(boatService.createBoatByNameAndCapacity(boat));
     }
 
     @Override

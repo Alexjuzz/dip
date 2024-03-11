@@ -48,4 +48,5 @@ public class Telephone {
     @JoinColumn(name = "user_id")
     private User user;
 
+
 }

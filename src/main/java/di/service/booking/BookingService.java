@@ -15,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+
 //TODO :  1) Подумать как правильно обработать все возможные исключения.
 //        2) Сделать Class user и связать его с бронированием.
 //        3) Создать методы обновления всех данных для каждого нового дня. Создать метод бы закрывал любое

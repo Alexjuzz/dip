@@ -2,6 +2,7 @@ package di.controller.boat;
 
 import di.enums.TripType;
 import di.model.dto.boats.ResponseBoat;
+import di.model.entity.boats.Boat;
 import jakarta.persistence.Enumerated;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface iBoatController {
 
     @PostMapping("")
-    public ResponseEntity<ResponseBoat> createBoatByNameAndCapacity();
+    public ResponseEntity<ResponseBoat> createBoatByNameAndCapacity(@RequestBody Boat boat);
 
     @GetMapping("/all")
     ResponseEntity<List<ResponseBoat>> getAll();

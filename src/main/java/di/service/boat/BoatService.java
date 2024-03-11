@@ -26,8 +26,12 @@ public class BoatService {
 
     }
 
-    public ResponseBoat createBoatByNameAndCapacity() { // Создание корабля.
-        return convertBoatToResponseBoat(repository.save(new Boat()));
+    public ResponseBoat createBoatByNameAndCapacity(Boat boat) { // Создание корабля.
+        AbstractBoat newBoat =  new Boat();
+        newBoat.setName(boat.getName());
+        newBoat.setTrip(boat.getTrip());
+        newBoat.setTripType(boat.getTripType());
+        return convertBoatToResponseBoat(repository.save(newBoat));
     }
 
 
