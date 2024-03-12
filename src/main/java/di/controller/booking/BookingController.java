@@ -61,15 +61,5 @@ public class BookingController implements iBookingController {
         }
     }
 
-    public boolean cancelReservation(Long seatId,BookingTime bookingTime){
-        try {
-            return true;
-        }catch (SeatNotFoundException ex){
-            throw  new SeatNotFoundException(ex.getMessage());
-        }catch (BookingNotFoundException ex){
-            throw new BoatNotFoundException(ex.getMessage());
-        }catch (InvalidPhoneNumberException ex){
-            throw new InvalidPhoneNumberException(ex.getMessage());
-        }
-    }
+
 }

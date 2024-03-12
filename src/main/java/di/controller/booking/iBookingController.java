@@ -14,7 +14,7 @@ import java.util.List;
 public interface iBookingController {
 
     @GetMapping
-    @RequestMapping("/getBookingPlacesBySeatId")
+    @RequestMapping("/getBookingReservationBySeatId")
     ResponseEntity<List<ResponseBooking>> getBookingReservationBySeatId(@PathVariable Long id);
 
     @PostMapping
@@ -32,7 +32,7 @@ public interface iBookingController {
 
     @PostMapping
     @RequestMapping("/cancelReservation")
-    ResponseEntity<String> cancelReservation(@RequestParam Long seatId,
-                                             @RequestParam BookingTime bookingTime,
-                                             @RequestParam String phoneNumber);
+    ResponseEntity<String> cancelReservation(@RequestParam("seatId") Long seatId,
+                                             @RequestParam("bookingTime") BookingTime bookingTime,
+                                             @RequestParam("phoneNumber") String phoneNumber);
 }
