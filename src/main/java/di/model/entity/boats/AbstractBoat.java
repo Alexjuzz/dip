@@ -40,6 +40,7 @@ public class AbstractBoat implements InterfaceShip {
      */
     @OneToMany(mappedBy = "boat", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
+    @Column(name = "places")
     private List<Seat> places = new ArrayList<>();
 
     /**

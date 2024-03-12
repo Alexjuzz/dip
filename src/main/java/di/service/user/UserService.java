@@ -1,6 +1,8 @@
 package di.service.user;
 
 
+import di.customexceptions.telephone.TelephoneAlreadyExistException;
+import di.customexceptions.user.UserEmptyResultDataException;
 import di.model.dto.user.ResponseUser;
 import di.model.entity.user.RegularUser;
 import di.model.entity.user.User;
@@ -40,7 +42,7 @@ public class UserService {
         }
 
         if(telephoneRepository.existsByNumber(user.getTelephone().getNumber())){
-            throw  new IllegalArgumentException("Telephone number already exist");
+            throw  new TelephoneAlreadyExistException("Telephone number already exist");
         }
         User requestUser = new User();
         requestUser.setName(user.getName());

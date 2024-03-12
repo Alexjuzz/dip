@@ -52,10 +52,11 @@ public class BookingService {
      * @return - возращает обьект ответа для фронта.
      */
     @Transactional
-    public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime,String number) {
+    public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime, String number) {
 
+        System.out.println(number);
         Telephone telephone = telephoneRepository.getIdByNumber(number).
-                orElseThrow(()-> new TelephoneNotFoundException("Telephone not found"));
+                orElseThrow(() -> new TelephoneNotFoundException("Telephone not found"));
 
 
         Seat seat = seatRepository.findById(seatId)
@@ -74,7 +75,7 @@ public class BookingService {
     }
 
     @Transactional
-    public boolean cancelReservation(Long seatId, BookingTime bookingTime){
+    public boolean cancelReservation(Long seatId, BookingTime bookingTime) {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new SeatNotFoundException("Seat not found"));
 
@@ -121,6 +122,7 @@ public class BookingService {
 
     /**
      * Метод для очистки всех бронирований на текущем месте
+     *
      * @param id - ID места в базе данных
      * @return true - если операция была успешна, если место было не найдено будеь выбрашено исключение.
      */

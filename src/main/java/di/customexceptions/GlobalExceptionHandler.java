@@ -7,8 +7,10 @@ import di.customexceptions.booking.BookingNotFoundException;
 import di.customexceptions.seat.SeatAlreadyBookedException;
 import di.customexceptions.seat.SeatNotFoundException;
 import di.customexceptions.seat.SeatsWithBoatIsEmpty;
-import di.customexceptions.telephone.TelephoneAlreadyExist;
+import di.customexceptions.telephone.TelephoneAlreadyExistException;
 import di.customexceptions.telephone.TelephoneNotFoundException;
+import di.customexceptions.user.UserEmptyResultDataException;
+import di.customexceptions.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -77,8 +79,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(TelephoneAlreadyExist.class)
-    public ResponseEntity<Object> handleTelephoneAlreadyExistException(TelephoneAlreadyExist ex, WebRequest request) {
+    @ExceptionHandler(TelephoneAlreadyExistException.class)
+    public ResponseEntity<Object> handleTelephoneAlreadyExistException(TelephoneAlreadyExistException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.CONFLICT.value());
@@ -93,7 +95,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "Repository is empty boats not found");
+        body.put("error", "Repository is empty, boats not found");
         body.put("message", ex.getMessage());
         body.put("path", request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
@@ -103,7 +105,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleBoatValidCapacityException(BoatValidCapacityException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", "Invalid capacity. Min value = 5, Max = 100");
         body.put("message", ex.getMessage());
         body.put("path", request.getDescription(false));
@@ -116,6 +118,27 @@ public class GlobalExceptionHandler {
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.NOT_FOUND.value());
         body.put("error", "Seats in this boat not found.");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserEmptyResultDataException.class)
+    public ResponseEntity<Object> handleUserEmptyResultDataException(UserEmptyResultDataException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "Repository is empty, users not found.");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserEmptyResultDataException(UserNotFoundException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "User not found.");
         body.put("message", ex.getMessage());
         body.put("path", request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
