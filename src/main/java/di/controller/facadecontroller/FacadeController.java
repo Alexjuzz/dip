@@ -2,9 +2,13 @@ package di.controller.facadecontroller;
 
 
 import di.enums.BookingTime;
+import di.model.dto.boats.ResponseBoat;
 import di.model.dto.booking.ResponseBooking;
+import di.model.dto.seat.ResponseSeat;
 import di.model.dto.user.ResponseUser;
+import di.model.entity.seats.Seat;
 import di.model.entity.user.User;
+import di.service.boat.BoatService;
 import di.service.booking.BookingService;
 import di.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +23,14 @@ import java.util.List;
 public class FacadeController {
     private final BookingService bookingService;
     private final UserService userService;
+    private final BoatService boatService;
 
     @Autowired
 
-    public FacadeController(BookingService bookingService, UserService userService) {
+    public FacadeController(BookingService bookingService, UserService userService,BoatService boatService) {
         this.bookingService = bookingService;
         this.userService = userService;
+        this.boatService = boatService;
     }
 
     //region USER API REGION
@@ -71,6 +77,22 @@ public class FacadeController {
                                                     @RequestParam("bookingTime")BookingTime bookingTime,
                                                     @RequestParam("number") String number){
         return ResponseEntity.ok("Reservation is canceling - " + bookingService.cancelReservation(seatId,bookingTime,number));
+    }
+    //endregion
+
+    //region BOAT API REGION
+    @GetMapping("/boats")
+    public ResponseEntity<List<ResponseBoat>> getAllBoats(){
+        return ResponseEntity.ok(boatService.getAllBoats());
+    }
+    @GetMapping("/boat/{id}")
+    public ResponseEntity<ResponseBoat> getBoatById(@PathVariable Long boatId){
+        return ResponseEntity.ok(boatService.getBoatById(boatId));
+    }
+
+    @GetMapping("/boat/seats/{boatId}")
+    public ResponseEntity<List<Seat>> getSeatByBoatId(@PathVariable Long boatId){
+        return ResponseEntity.ok(boatService.getSeatsByBoatId(boatId));
     }
     //endregion
 }
