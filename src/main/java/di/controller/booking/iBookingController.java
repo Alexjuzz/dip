@@ -3,16 +3,19 @@ package di.controller.booking;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //TODO : 1) Обработать возможные исключения и методы ответа.
 
 @RestController
 @RequestMapping("/booking")
 public interface iBookingController {
+
+    @GetMapping
+    @RequestMapping("/getBookingPlacesBySeatId")
+    ResponseEntity<List<ResponseBooking>> getBookingReservationBySeatId(@PathVariable Long id);
 
     @PostMapping
     @RequestMapping("/setBookingToPlace")
@@ -27,4 +30,9 @@ public interface iBookingController {
                                                               @RequestParam("newTime") BookingTime newTime
     );
 
+    @PostMapping
+    @RequestMapping("/cancelReservation")
+    ResponseEntity<String> cancelReservation(@RequestParam Long seatId,
+                                             @RequestParam BookingTime bookingTime,
+                                             @RequestParam String phoneNumber);
 }

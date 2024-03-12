@@ -12,5 +12,5 @@ public interface TelephoneRepository extends JpaRepository<Telephone, Long> {
 
 
     @Query("SELECT t FROM  Telephone t WHERE t.number = :number")
-    Optional<Telephone> getIdByNumber(@Param("number") String number);
+    Optional<Telephone> getTelephoneByNumber(@Param("number") String number);
 }

@@ -2,8 +2,10 @@ package di.service.booking;
 
 import di.customexceptions.boat.BoatNotFoundException;
 import di.customexceptions.booking.BookingNotFoundException;
+import di.customexceptions.booking.BookingReservationIsEmpty;
 import di.customexceptions.seat.SeatAlreadyBookedException;
 import di.customexceptions.seat.SeatNotFoundException;
+import di.customexceptions.telephone.InvalidPhoneNumberException;
 import di.customexceptions.telephone.TelephoneNotFoundException;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 //TODO :  1) Подумать как правильно обработать все возможные исключения.
 //        2) Сделать Class user и связать его с бронированием.
@@ -55,7 +58,7 @@ public class BookingService {
     public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime, String number) {
 
         System.out.println(number);
-        Telephone telephone = telephoneRepository.getIdByNumber(number).
+        Telephone telephone = telephoneRepository.getTelephoneByNumber(number).
                 orElseThrow(() -> new TelephoneNotFoundException("Telephone not found"));
 
 
@@ -75,9 +78,10 @@ public class BookingService {
     }
 
     @Transactional
-    public boolean cancelReservation(Long seatId, BookingTime bookingTime) {
+    public boolean cancelReservation(Long seatId, BookingTime bookingTime, String phoneNumber) {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new SeatNotFoundException("Seat not found"));
+
 
         //поиск забранированного времени в списке всех броней.
         Booking bookingToRemove = seat.getBookings().stream()
@@ -85,7 +89,14 @@ public class BookingService {
                 .findFirst()
                 .orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
-        bookingRepository.delete(bookingToRemove); // Удаляем бронирование
+        Telephone tel = telephoneRepository.getTelephoneByNumber(phoneNumber).orElseThrow(() -> new TelephoneNotFoundException("Phone with number:" + phoneNumber + " is not found"));
+        if (bookingToRemove.getTelephone().getId().equals(tel.getId())) {
+            bookingRepository.delete(bookingToRemove); // Удаляем бронирование
+        } else {
+            throw new InvalidPhoneNumberException("Invalid phone number, reservation was recorded on another number");
+        }
+
+
         return true;
     }
 
@@ -118,6 +129,15 @@ public class BookingService {
 
         booking.setBookingTime(newTime);
         return convetBookingToResponseBooking(bookingRepository.save(booking));
+    }
+
+    public List<ResponseBooking> getBookingReservationBySeatId(Long id) {
+        Seat seat = seatRepository.findById(id).orElseThrow(() -> new SeatNotFoundException("Seat not found with ID: " + id));
+        List<ResponseBooking> responseBookings = seat.getBookings().stream().map(this::convetBookingToResponseBooking).toList();
+        if (responseBookings.isEmpty()) {
+            throw new BookingReservationIsEmpty("Booking reservation is empty on seat id: " + id);
+        }
+        return responseBookings;
     }
 
     /**

@@ -4,9 +4,11 @@ import di.customexceptions.boat.BoatEmptyResultDataException;
 import di.customexceptions.boat.BoatNotFoundException;
 import di.customexceptions.boat.BoatValidCapacityException;
 import di.customexceptions.booking.BookingNotFoundException;
+import di.customexceptions.booking.BookingReservationIsEmpty;
 import di.customexceptions.seat.SeatAlreadyBookedException;
 import di.customexceptions.seat.SeatNotFoundException;
 import di.customexceptions.seat.SeatsWithBoatIsEmpty;
+import di.customexceptions.telephone.InvalidPhoneNumberException;
 import di.customexceptions.telephone.TelephoneAlreadyExistException;
 import di.customexceptions.telephone.TelephoneNotFoundException;
 import di.customexceptions.user.UserEmptyResultDataException;
@@ -142,5 +144,25 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage());
         body.put("path", request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(InvalidPhoneNumberException.class)
+    public ResponseEntity<Object> handleUserEmptyResultDataException(InvalidPhoneNumberException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Invalid phone number.");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(BookingReservationIsEmpty.class)
+    public ResponseEntity<Object> BookingReservationIsEmpty(InvalidPhoneNumberException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Seat reservation is empty.");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }
