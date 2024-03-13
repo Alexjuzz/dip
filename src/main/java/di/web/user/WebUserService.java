@@ -29,6 +29,7 @@ public class WebUserService {
         Telephone tel = new Telephone();
         tel.setUser(user);
         tel.setNumber(user.getTelephone().getNumber());
+        user.setTelephone(tel);
         userRepository.save(user);
         return responseUser;
     }

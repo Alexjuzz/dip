@@ -45,12 +45,12 @@ public class WebBookingService {
         this.seatRepository = seatRepository;
     }
 
-    public ResponseBooking makeBooking(Long seatId, String time,User user){
+    public ResponseBooking makeBooking(Long seatId, BookingTime time,User user){
 
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new SeatNotFoundException("Seat with ID: " + seatId + " not found"));
 
-        BookingTime bookingTime = BookingTime.fromString(time);
+        BookingTime bookingTime = time;
         Telephone telephone = user.getTelephone();
         if (!checkReservedPlace(seat, bookingTime)) {
             throw new SeatAlreadyBookedException("The seat is already booked for the selected time");

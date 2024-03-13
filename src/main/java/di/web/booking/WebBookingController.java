@@ -40,7 +40,7 @@ public class WebBookingController {
     }
 
     @PostMapping("/booking/{seatId}")
-    public String setBookingToSeat(@RequestParam Long seatId, @RequestParam("time") String time, String name, String email, String phone, Model model) {
+    public String setBookingToSeat(@RequestParam Long seatId, @RequestParam("time") BookingTime time, String name, String email, String phone, Model model) {
         User user = service.findByPhone(phone);
         if (user == null) {
             throw new UserNotFoundException("user not found");
@@ -52,21 +52,10 @@ public class WebBookingController {
         return "booking";
     }
     @GetMapping("/booking/form")
-    public String showBookingForm(@RequestParam("seatId") Long seatId, @RequestParam("time") String time, Model model) {
+    public String showBookingForm(@RequestParam("seatId") Long seatId, @RequestParam("time") BookingTime time, Model model) {
         model.addAttribute("seatId", seatId);
-        model.addAttribute("time", time);
+        model.addAttribute("time", time.toString());
         return "makeBooking";
     }
-//    @GetMapping("/boats/process-selection")
-//    public String processSelection(@RequestParam("boatId") Long boatId, @RequestParam("time") String time, Model model, RedirectAttributes redirectAttributes) {
-//        // Передача id корабля и выбранного времени в сервис, который возвращает список доступных мест
-//        List<ResponseSeat> availableSeats = bookingService.getAvailableSeats(boatId, time);
-//
-//        // Передача полученных данных в модель для отображения на странице деталей корабля
-//        model.addAttribute("availableSeats", availableSeats);
-//        model.addAttribute("selectedTime", time);
-//
-//        // Переадресация на страницу с деталями корабля и доступными местами
-//        return "boatDetails";
-//    }
+
 }

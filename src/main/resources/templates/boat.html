@@ -15,6 +15,7 @@
     <div th:each="seat : ${boat.places}">
         <div>Место №<span th:text="${seat.seatNumber}"></span>:</div>
         <div th:if="${seat.bookings}">
+
             <div th:each="booking : ${seat.bookings}">
                 <div th:if="${selectedTime != null and booking.bookingTime == selectedTime}">
                     Бронирование:
@@ -23,21 +24,24 @@
                         <li>Время: <span th:text="${booking.bookingTime}"></span></li>
                     </ul>
                 </div>
+
             </div>
+            <div th:unless="${#lists.isEmpty(seat.bookings)}">
+                <form th:action="@{/booking/process-booking}" method="get">
+                    <input type="hidden" name="seatId" th:value="${seat.id}" />
+                    <input type="hidden" name="time" th:value="${selectedTime}" />
+                    <button type="submit" class="btn btn-primary">Бронировать</button>
+                </form>
+            </div>
+
         </div>
         <div th:each="booking : ${seat.bookings}" th:if="${selectedTime != null}">
-            <div th:if="${booking.bookingTime.toString().equals(selectedTime)}">
-                <!-- Место занято в выбранное время -->
+            <div
+                    th:if="${booking.bookingTime.toString().equals(selectedTime)}">
             </div>
         </div>
-        <div th:unless="${#lists.isEmpty(seat.bookings)}">
-            <form th:action="@{/booking/process-booking}" method="get">
-                <input type="hidden" name="seatId" th:value="${seat.id}" />
-                <input type="hidden" name="time" th:value="${selectedTime}" />
-                <button type="submit" class="btn btn-primary">Бронировать</button>
-            </form>
-        </div>
     </div>
+
 </div>
 </body>
 </html>
