@@ -2,16 +2,37 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Детали корабля</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<h2>Мои бронирования</h2>
-<div th:each="booking : ${bookings}">
-    <div>
-        <h3 th:text="${booking.boatName}">Название катера</h3>
-        <div th:text="${booking.date}">Дата бронирования</div>
-        <!-- Кнопка для отмены бронирования -->
-        <a th:href="@{/booking/cancel(bookingId=${booking.id})}">Отменить бронирование</a>
+<div class="container mt-4">
+    <h2 th:text="${boat.name}">Название корабля</h2>
+    <div>Тип поездки: <span th:text="${boat.tripType}"></span></div>
+    <div>Выбранное время: <span th:text="${selectedTime != null ? selectedTime.time : 'не выбрано'}"></span></div>
+
+    <h3>Места и бронирования</h3>
+    <div th:each="seat : ${boat.places}">
+        <div>Место №<span th:text="${seat.seatNumber}"></span>:</div>
+        <div th:if="${seat.bookings}">
+            <div th:each="booking : ${seat.bookings}">
+                <div th:if="${selectedTime != null and booking.bookingTime == selectedTime}">
+                    Бронирование:
+                    <ul>
+                        <li>Дата: <span th:text="${booking.date}"></span>,</li>
+                        <li>Время: <span th:text="${booking.bookingTime}"></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div th:if="${seat.bookings == null or seat.bookings.isEmpty()}">
+            Место доступно для бронирования
+            <form th:action="@{/booking/make}" method="post">
+                <input type="hidden" name="seatId" th:value="${seat.id}" />
+                <input type="hidden" name="time" th:value="${selectedTime.time}" />
+                <button type="submit" class="btn btn-primary">Бронировать</button>
+            </form>
+        </div>
     </div>
 </div>
 </body>
