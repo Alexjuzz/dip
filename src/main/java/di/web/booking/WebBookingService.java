@@ -8,6 +8,9 @@ import di.customexceptions.telephone.TelephoneNotFoundException;
 import di.customexceptions.user.UserNotFoundException;
 import di.enums.BookingTime;
 import di.model.dto.booking.ResponseBooking;
+import di.model.dto.seat.ResponseSeat;
+import di.model.entity.boats.AbstractBoat;
+import di.model.entity.boats.Boat;
 import di.model.entity.booking.Booking;
 import di.model.entity.seats.Seat;
 import di.model.entity.telephone.Telephone;
@@ -22,18 +25,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WebBookingService {
 
-    private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final TelephoneRepository telephoneRepository;
     private final SeatRepository seatRepository;
+    private final BoatRepository boatRepository;
 
     @Autowired
-    public WebBookingService(UserRepository userRepository, BookingRepository bookingRepository,TelephoneRepository telephoneRepository,SeatRepository seatRepository) {
-        this.userRepository = userRepository;
+    public WebBookingService(BoatRepository boatRepository, BookingRepository bookingRepository,TelephoneRepository telephoneRepository,SeatRepository seatRepository) {
+        this.boatRepository = boatRepository;
         this.bookingRepository = bookingRepository;
         this.telephoneRepository = telephoneRepository;
         this.seatRepository = seatRepository;
@@ -92,4 +98,32 @@ public class WebBookingService {
         responseBooking.setSeat(booking.getSeat());
         return responseBooking;
     }
+
+    public List<ResponseSeat> getAvailableSeats(Long boatId, String time) {
+        Optional<AbstractBoat> boatOptional = boatRepository.findById(boatId);
+        List<ResponseSeat> availableSeats = new ArrayList<>();
+        if (boatOptional.isPresent()) {
+            AbstractBoat boat = boatOptional.get();
+            BookingTime selectedTime = BookingTime.fromString(time);
+            for (Seat seat : boat.getPlaces()) {
+
+                boolean isAvailable = seat.getBookings().stream()
+                        .noneMatch(booking -> booking.getBookingTime().equals(selectedTime));
+                if (isAvailable) {
+
+                    ResponseSeat responseSeat = convertSeatToResponseSeat(seat);
+                    availableSeats.add(responseSeat);
+                }
+            }
+        }
+        return availableSeats;
+    }
+    public ResponseSeat convertSeatToResponseSeat(Seat seat) {
+        ResponseSeat responseSeat = new ResponseSeat();
+        responseSeat.setId(seat.getId());
+        responseSeat.setBoat(seat.getBoat());
+        responseSeat.setBookings(new ArrayList<>(seat.getBookings()));
+        return responseSeat;
+    }
+
 }

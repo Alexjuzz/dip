@@ -15,7 +15,7 @@ import java.util.List;
 public interface iBoatController {
 
     @PostMapping("")
-    public ResponseEntity<ResponseBoat> createBoatByNameAndCapacity(@RequestBody Boat boat);
+    public ResponseEntity<ResponseBoat> createBoat(@RequestBody Boat boat);
 
     @GetMapping("/all")
     ResponseEntity<List<ResponseBoat>> getAll();

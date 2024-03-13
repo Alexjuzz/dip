@@ -25,7 +25,14 @@
                 </div>
             </div>
         </div>
-        <div th:if="${seat.bookings == null or seat.bookings.isEmpty()}">Место доступно для бронирования</div>
+        <div th:if="${seat.bookings == null or seat.bookings.isEmpty()}">
+            Место доступно для бронирования
+            <form th:action="@{/booking/process-booking}" method="get">
+                <input type="hidden" name="seatId" th:value="${seat.id}" />
+                <input type="hidden" name="time" th:value="${selectedTime.time}" />
+                <button type="submit" class="btn btn-primary">Бронировать</button>
+            </form>
+        </div>
     </div>
 </div>
 </body>

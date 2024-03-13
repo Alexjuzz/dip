@@ -2,13 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Страница бронирования</title>
+    <title>Форма бронирования</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container mt-4">
     <h2>Форма бронирования</h2>
-    <form th:action="@{/booking/confirm}" method="post">
+    <form th:action="@{/booking/make}" method="post">
         <div class="form-group">
             <label for="name">Имя:</label>
             <input type="text" id="name" name="name" class="form-control" required/>
@@ -21,11 +21,8 @@
             <label for="phone">Номер телефона:</label>
             <input type="tel" id="phone" name="phone" class="form-control" required/>
         </div>
-
-        <!-- Скрытые поля для передачи дополнительных данных, например, ID места и выбранного времени -->
         <input type="hidden" name="seatId" th:value="${seatId}" />
         <input type="hidden" name="time" th:value="${time}" />
-
         <button type="submit" class="btn btn-primary">Подтвердить бронирование</button>
     </form>
 </div>

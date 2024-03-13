@@ -29,7 +29,7 @@ public class WebUserController {
     public String registerUser(@ModelAttribute("User") ResponseUser responseUser) {
         service.registerUser(responseUser);
 
-        return "redirect:/index";
+        return "redirect:/boats/selection";
 
     }
 

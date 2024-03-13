@@ -29,7 +29,7 @@ public class BoatController implements iBoatController {
 
 
     @Override
-    public ResponseEntity<ResponseBoat> createBoatByNameAndCapacity(Boat boat) {
+    public ResponseEntity<ResponseBoat> createBoat(Boat boat) {
         return ResponseEntity.ok(boatService.createBoatByNameAndCapacity(boat));
     }
 

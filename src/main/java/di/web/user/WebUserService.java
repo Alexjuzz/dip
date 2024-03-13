@@ -1,8 +1,10 @@
 package di.web.user;
 
 import di.model.dto.user.ResponseUser;
+import di.model.entity.telephone.Telephone;
 import di.model.entity.user.RegularUser;
 import di.model.entity.user.User;
+import di.repository.telephone.TelephoneRepository;
 import di.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +15,21 @@ import java.util.Optional;
 @Service
 public class WebUserService {
     private final UserRepository userRepository;
+    private final TelephoneRepository telephoneRepository;
 
     @Autowired
-    public WebUserService(UserRepository userRepository) {
+    public WebUserService(UserRepository userRepository,TelephoneRepository telephoneRepository) {
         this.userRepository = userRepository;
+        this.telephoneRepository = telephoneRepository;
     }
 
     @Transactional
     public ResponseUser registerUser(ResponseUser responseUser){
         User user = convertResponseUserToUser(responseUser);
-         userRepository.save(user);
+        Telephone tel = new Telephone();
+        tel.setUser(user);
+        tel.setNumber(user.getTelephone().getNumber());
+        userRepository.save(user);
         return responseUser;
     }
 
@@ -45,6 +52,7 @@ public class WebUserService {
         response.setEmail(user.getEmail());
         response.setPassword(user.getPassword());
         response.setTelephone(user.getTelephone());
+
         return response;
     }
 
