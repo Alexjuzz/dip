@@ -41,8 +41,6 @@ public class WebBoatController {
         BookingTime getTime = BookingTime.fromString(time);
         model.addAttribute("boat", boat);
         if (time != null) {
-            System.out.println(getTime);
-
             model.addAttribute("selectedTime", getTime);
         }
         return "boat";

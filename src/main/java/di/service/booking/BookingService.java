@@ -57,7 +57,6 @@ public class BookingService {
     @Transactional
     public ResponseBooking setBookingToPlace(Long seatId, BookingTime bookingTime, String number) {
 
-        System.out.println(number);
         Telephone telephone = telephoneRepository.getTelephoneByNumber(number).
                 orElseThrow(() -> new TelephoneNotFoundException("Telephone not found"));
 

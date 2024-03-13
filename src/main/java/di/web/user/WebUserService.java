@@ -59,4 +59,7 @@ public class WebUserService {
         return user;
     }
 
+    public  User findByPhone(String phone) {
+     return    userRepository.getByTelephone(phone);
+    }
 }

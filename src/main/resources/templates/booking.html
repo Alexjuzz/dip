@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Детали бронирования</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<h1>BOOKING </h1>
+<div class="container mt-4">
+    <h2>Детали бронирования <span th:text="${booking.date}"></span></h2>
+    <div>Телефон: <span th:text="${booking.telephone.number}"></span></div>
+    <h3>Место и бронирование</h3>
+    <div>Место №<span th:text="${booking.seat.seatNumber}"></span></div>
+    <div>Бронирование:
+        <ul>
+            <li>Дата: <span th:text="${booking.date}"></span></li>
+            <li>Время: <span th:text="${booking.bookingTime}"></span></li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
