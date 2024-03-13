@@ -81,7 +81,7 @@ public class UserService {
 
 
 
-    private User convertResponseUserToUser(ResponseUser responseUser) {
+    public User convertResponseUserToUser(ResponseUser responseUser) {
         User user = new RegularUser();
         user.setEmail(responseUser.getEmail());
         user.setPassword(responseUser.getPassword());

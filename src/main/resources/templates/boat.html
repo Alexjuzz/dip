@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Мои бронирования</h2>
+<div th:each="booking : ${bookings}">
+    <div>
+        <h3 th:text="${booking.boatName}">Название катера</h3>
+        <div th:text="${booking.date}">Дата бронирования</div>
+        <!-- Кнопка для отмены бронирования -->
+        <a th:href="@{/booking/cancel(bookingId=${booking.id})}">Отменить бронирование</a>
+    </div>
+</div>
+</body>
+</html>
