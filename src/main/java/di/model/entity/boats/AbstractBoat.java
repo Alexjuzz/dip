@@ -52,8 +52,6 @@ public class AbstractBoat implements InterfaceShip {
     @OneToOne(mappedBy = "boat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Trip trip;
 
-
-
     /**
      * Конструктор без параметров, сделан для того чтобы сразу создать свободные места и записать
      * их в лист places. Также проинициализировать поля seat's.

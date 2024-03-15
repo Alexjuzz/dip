@@ -26,13 +26,26 @@ public class UserService {
 
     @Autowired
     private Validator validator;
+    /**
+     * Конструктор для создания экземпляра UserService.
+     *
+     * @param repository          Репозиторий пользователей.
+     * @param telephoneRepository Репозиторий телефонов.
+     */
     @Autowired
     public UserService(UserRepository repository, TelephoneRepository telephoneRepository) {
         this.repository = repository;
         this.telephoneRepository = telephoneRepository;
     }
 
-
+    /**
+     * Метод для создания нового пользователя.
+     *
+     * @param user Пользователь для создания.
+     * @return Ответ с информацией о созданном пользователе.
+     * @throws ConstraintViolationException Если есть нарушения ограничений.
+     * @throws TelephoneAlreadyExistException Если номер телефона уже существует.
+     */
     @Transactional
     public ResponseUser createUser(User user) {
         //TODO доделать validator
@@ -55,18 +68,34 @@ public class UserService {
 
         return convertUserToResponseUser(repository.save(requestUser));
     }
+    /**
+     * Метод для получения всех пользователей.
+     *
+     * @return Список ответов с информацией о пользователях.
+     */
     @Transactional
     public List<ResponseUser> getAllUsers() {
         return repository.findAll().stream().map(this::convertUserToResponseUser).toList();
     }
 
+    /**
+     * Метод для получения пользователя по номеру телефона.
+     *
+     * @param number Номер телефона пользователя.
+     * @return Ответ с информацией о найденном пользователе.
+     */
     @Transactional
     public ResponseUser getUserByPhone(String number){
         User user = repository.getByTelephone(number);
         return convertUserToResponseUser(user);
     }
 
-
+    /**
+     * Преобразование объекта пользователя в ответ о пользователе.
+     *
+     * @param user Пользователь для преобразования.
+     * @return Ответ о пользователе.
+     */
 
     //region методы конвертации обьектов.
     private ResponseUser convertUserToResponseUser(User user) {
@@ -79,7 +108,12 @@ public class UserService {
         return response;
     }
 
-
+    /**
+     * Преобразование объекта ответа о пользователе в пользователя.
+     *
+     * @param responseUser Ответ о пользователе для преобразования.
+     * @return Пользователь.
+     */
 
     public User convertResponseUserToUser(ResponseUser responseUser) {
         User user = new RegularUser();

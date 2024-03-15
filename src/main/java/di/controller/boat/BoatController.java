@@ -41,7 +41,7 @@ public class BoatController implements iBoatController {
             if (boats == null || boats.isEmpty()) {
                 throw new BoatEmptyResultDataException("No boats found");
             }
-            return ResponseEntity.ok(boatService.getAllBoats());
+            return ResponseEntity.ok(boats);
         } catch (BoatEmptyResultDataException ex) {
           throw  new BoatEmptyResultDataException(ex.getMessage());
         }

@@ -4,7 +4,6 @@ package di.controller.facadecontroller;
 import di.enums.BookingTime;
 import di.model.dto.boats.ResponseBoat;
 import di.model.dto.booking.ResponseBooking;
-import di.model.dto.seat.ResponseSeat;
 import di.model.dto.user.ResponseUser;
 import di.model.entity.seats.Seat;
 import di.model.entity.user.User;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController

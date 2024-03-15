@@ -1,6 +1,6 @@
 package di.customexceptions.booking;
 
-public class BookingReservationIsEmpty extends RuntimeException{
+    public class BookingReservationIsEmpty extends RuntimeException{
     public BookingReservationIsEmpty(String message){
         super(message);
     }
